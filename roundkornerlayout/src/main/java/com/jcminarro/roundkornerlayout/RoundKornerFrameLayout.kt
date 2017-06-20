@@ -1,55 +1,28 @@
 package com.jcminarro.roundkornerlayout
 
+import android.content.Context
 import android.graphics.Canvas
+import android.util.AttributeSet
+import android.widget.FrameLayout
 
 class RoundKornerFrameLayout
-    @JvmOverloads constructor(context: android.content.Context, attrs: android.util.AttributeSet? = null, defStyleAttr: Int = 0) :
-        android.widget.FrameLayout(context, attrs, defStyleAttr) {
-    private val path = android.graphics.Path()
-    private var cornerRadius = DEFAULT_CORNER_RADIUS
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+        FrameLayout(context, attrs, defStyleAttr) {
+    private val canvasRounder: CanvasRounder
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.RoundKornerFrameLayout, 0, 0)
-        try {
-            cornerRadius = array.getDimension(R.styleable.RoundKornerFrameLayout_corner_radius, DEFAULT_CORNER_RADIUS)
-        } finally {
-            array.recycle()
-        }
+        val cornerRadius = array.getDimension(R.styleable.RoundKornerFrameLayout_corner_radius, 0f)
+        array.recycle()
+        canvasRounder = CanvasRounder(cornerRadius)
     }
 
     override fun onSizeChanged(currentWidth: Int, currentHeight: Int, oldWidth: Int, oldheight: Int) {
         super.onSizeChanged(currentWidth, currentHeight, oldWidth, oldheight)
-        path.reset()
-        val rectF = android.graphics.RectF(0f, 0f, currentWidth.toFloat(), currentHeight.toFloat())
-        path.addRoundRect(rectF, cornerRadius, cornerRadius, android.graphics.Path.Direction.CW)
-        path.close()
-
+        canvasRounder.updateSize(currentWidth, currentHeight)
     }
 
-    override fun draw(canvas: Canvas) {
-        if (cornerRadius != DEFAULT_CORNER_RADIUS) {
-            val save = canvas.save()
-            canvas.clipPath(path)
-            super.draw(canvas)
-            canvas.restoreToCount(save)
-        } else {
-            super.draw(canvas)
-        }
-    }
+    override fun draw(canvas: Canvas) = canvasRounder.round(canvas) { super.draw(canvas) }
 
-    override fun dispatchDraw(canvas: Canvas) {
-        if (cornerRadius != DEFAULT_CORNER_RADIUS) {
-            val save = canvas.save()
-            canvas.clipPath(path)
-            super.dispatchDraw(canvas)
-            canvas.restoreToCount(save)
-        } else {
-            super.dispatchDraw(canvas)
-        }
-    }
-
-    companion object {
-
-        val DEFAULT_CORNER_RADIUS = 0f
-    }
+    override fun dispatchDraw(canvas: Canvas) = canvasRounder.round(canvas) { super.dispatchDraw(canvas)}
 }
