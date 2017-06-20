@@ -1,0 +1,18 @@
+#Android Studio
+.idea
+.externalNativeBuild
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+#Gradle
+.gradle
+local.properties
+build
+build
+captures
+
+#Other
+.DS_Store
