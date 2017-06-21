@@ -9,4 +9,8 @@
     <declare-styleable name="RoundKornerLinearLayout">
         <attr name="corner_radius"/>
     </declare-styleable>
+
+    <declare-styleable name="RoundKornerRelativeLayout">
+        <attr name="corner_radius"/>
+    </declare-styleable>
 </resources>
