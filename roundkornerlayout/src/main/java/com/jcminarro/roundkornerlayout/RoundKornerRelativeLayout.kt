@@ -2,6 +2,7 @@ package com.jcminarro.roundkornerlayout
 
 import android.content.Context
 import android.graphics.Canvas
+import android.os.Build
 import android.util.AttributeSet
 import android.widget.RelativeLayout
 
@@ -15,6 +16,9 @@ class RoundKornerRelativeLayout
         val cornerRadius = array.getDimension(R.styleable.RoundKornerRelativeLayout_corner_radius, 0f)
         array.recycle()
         canvasRounder = CanvasRounder(cornerRadius)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            setLayerType(LAYER_TYPE_SOFTWARE, null)
+        }
     }
 
     override fun onSizeChanged(currentWidth: Int, currentHeight: Int, oldWidth: Int, oldheight: Int) {
