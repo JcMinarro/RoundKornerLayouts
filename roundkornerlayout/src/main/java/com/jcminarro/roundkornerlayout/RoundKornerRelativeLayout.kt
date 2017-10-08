@@ -29,4 +29,9 @@ class RoundKornerRelativeLayout
     override fun draw(canvas: Canvas) = canvasRounder.round(canvas) { super.draw(canvas) }
 
     override fun dispatchDraw(canvas: Canvas) = canvasRounder.round(canvas) { super.dispatchDraw(canvas)}
+
+    fun setCornerRadius(cornerRadius: Float) {
+        canvasRounder.cornerRadius = cornerRadius
+        invalidate()
+    }
 }
