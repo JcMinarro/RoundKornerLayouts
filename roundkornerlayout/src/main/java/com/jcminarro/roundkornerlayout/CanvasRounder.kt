@@ -6,7 +6,7 @@ import android.graphics.RectF
 
 internal class CanvasRounder(cornerRadius: Float) {
     private val path = android.graphics.Path()
-    private lateinit var rectF: RectF
+    private var rectF: RectF = RectF(0f, 0f, 0f, 0f)
     var cornerRadius: Float = cornerRadius
         set(value) {
             field = value
