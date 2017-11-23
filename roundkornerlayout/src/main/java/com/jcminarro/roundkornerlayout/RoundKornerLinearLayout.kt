@@ -16,6 +16,7 @@ class RoundKornerLinearLayout
         val cornerRadius = array.getDimension(R.styleable.RoundKornerLinearLayout_corner_radius, 0f)
         array.recycle()
         canvasRounder = CanvasRounder(cornerRadius)
+        updateOutlineProvider(cornerRadius)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             setLayerType(LAYER_TYPE_SOFTWARE, null)
         }
@@ -26,12 +27,13 @@ class RoundKornerLinearLayout
         canvasRounder.updateSize(currentWidth, currentHeight)
     }
 
-    override fun draw(canvas: Canvas) = canvasRounder.round(canvas) { super.draw(canvas) }
+    override fun draw(canvas: Canvas) = canvasRounder.round(canvas) { super.draw(it) }
 
-    override fun dispatchDraw(canvas: Canvas) = canvasRounder.round(canvas) { super.dispatchDraw(canvas)}
+    override fun dispatchDraw(canvas: Canvas) = canvasRounder.round(canvas) { super.dispatchDraw(it)}
 
     fun setCornerRadius(cornerRadius: Float) {
         canvasRounder.cornerRadius = cornerRadius
+        updateOutlineProvider(cornerRadius)
         invalidate()
     }
 }
