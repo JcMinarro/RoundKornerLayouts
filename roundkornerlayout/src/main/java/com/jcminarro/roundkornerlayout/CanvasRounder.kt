@@ -1,16 +1,51 @@
 package com.jcminarro.roundkornerlayout
 
 import android.graphics.Canvas
-import android.graphics.Path
 import android.graphics.RectF
 
-internal class CanvasRounder(cornerRadius: Float) {
+internal class CanvasRounder(private val cornersHolder: CornersHolder) {
     private val path = android.graphics.Path()
     private var rectF: RectF = RectF(0f, 0f, 0f, 0f)
-    var cornerRadius: Float = cornerRadius
+    var topLeftCornerRadius: Float
         set(value) {
-            field = value
+            cornersHolder.topLeftCornerRadius = value
             resetPath()
+        }
+        get() = cornersHolder.topLeftCornerRadius
+    var topRightCornerRadius: Float
+        set(value) {
+            cornersHolder.topRightCornerRadius = value
+            resetPath()
+        }
+        get() = cornersHolder.topRightCornerRadius
+    var bottomRightCornerRadius: Float
+        set(value) {
+            cornersHolder.bottomRightCornerRadius = value
+            resetPath()
+        }
+        get() = cornersHolder.bottomRightCornerRadius
+    var bottomLeftCornerRadius: Float
+        set(value) {
+            cornersHolder.bottomLeftCornerRadius = value
+            resetPath()
+        }
+        get() = cornersHolder.bottomLeftCornerRadius
+    var cornerRadius: Float
+        set(value) {
+            cornersHolder.topLeftCornerRadius = value
+            cornersHolder.topRightCornerRadius = value
+            cornersHolder.bottomRightCornerRadius = value
+            cornersHolder.bottomLeftCornerRadius = value
+            resetPath()
+        }
+        get() {
+            return if (topLeftCornerRadius == topRightCornerRadius
+                    && topRightCornerRadius == bottomRightCornerRadius
+                    && bottomRightCornerRadius == bottomLeftCornerRadius) {
+                topLeftCornerRadius
+            } else {
+                Float.NaN
+            }
         }
 
     fun round(canvas: Canvas, drawFunction: (Canvas) -> Unit) {
@@ -27,7 +62,13 @@ internal class CanvasRounder(cornerRadius: Float) {
 
     private fun resetPath() {
         path.reset()
-        path.addRoundRect(rectF, cornerRadius, cornerRadius, Path.Direction.CW)
+        path.addRoundRectWithRoundCorners(
+                rectF,
+                topLeftCornerRadius,
+                topRightCornerRadius,
+                bottomRightCornerRadius,
+                bottomLeftCornerRadius
+        )
         path.close()
     }
 }

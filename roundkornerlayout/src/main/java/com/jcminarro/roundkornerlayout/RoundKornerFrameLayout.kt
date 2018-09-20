@@ -13,13 +13,21 @@ class RoundKornerFrameLayout
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.RoundKornerFrameLayout, 0, 0)
-        val cornerRadius = array.getDimension(R.styleable.RoundKornerFrameLayout_corner_radius, 0f)
+
+        val cornersHolder = array.getCornerRadius(
+                R.styleable.RoundKornerFrameLayout_corner_radius,
+                R.styleable.RoundKornerFrameLayout_top_left_corner_radius,
+                R.styleable.RoundKornerFrameLayout_top_right_corner_radius,
+                R.styleable.RoundKornerFrameLayout_bottom_right_corner_radius,
+                R.styleable.RoundKornerFrameLayout_bottom_left_corner_radius
+        )
+
         array.recycle()
-        canvasRounder = CanvasRounder(cornerRadius)
+        canvasRounder = CanvasRounder(cornersHolder)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             setLayerType(LAYER_TYPE_SOFTWARE, null)
         }
-        updateOutlineProvider(cornerRadius)
+        updateOutlineProvider(cornersHolder)
     }
 
     override fun onSizeChanged(currentWidth: Int, currentHeight: Int, oldWidth: Int, oldheight: Int) {
@@ -31,8 +39,24 @@ class RoundKornerFrameLayout
 
     override fun dispatchDraw(canvas: Canvas) = canvasRounder.round(canvas) { super.dispatchDraw(it)}
 
-    fun setCornerRadius(cornerRadius: Float) {
-        canvasRounder.cornerRadius = cornerRadius
+    fun setCornerRadius(cornerRadius: Float, cornerType: CornerType = CornerType.ALL) {
+        when (cornerType) {
+            CornerType.ALL -> {
+                canvasRounder.cornerRadius = cornerRadius
+            }
+            CornerType.TOP_LEFT -> {
+                canvasRounder.topLeftCornerRadius = cornerRadius
+            }
+            CornerType.TOP_RIGHT -> {
+                canvasRounder.topRightCornerRadius = cornerRadius
+            }
+            CornerType.BOTTOM_RIGHT -> {
+                canvasRounder.bottomRightCornerRadius = cornerRadius
+            }
+            CornerType.BOTTOM_LEFT -> {
+                canvasRounder.bottomLeftCornerRadius = cornerRadius
+            }
+        }
         updateOutlineProvider(cornerRadius)
         invalidate()
     }
