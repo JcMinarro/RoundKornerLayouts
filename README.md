@@ -63,7 +63,7 @@ Declare it into your pom.xml
 <dependency>
   <groupId>com.jcminarro</groupId>
   <artifactId>RoundKornerLayouts</artifactId>
-  <version>0.3.1</version>
+  <version>0.4.0</version>
   <type>pom</type>
 </dependency>
 ```
@@ -73,7 +73,7 @@ Or into your build.gradle
 
 ```groovy
 dependencies {
-    compile 'com.jcminarro:RoundKornerLayouts:0.3.1'
+    compile 'com.jcminarro:RoundKornerLayouts:0.4.0'
 }
 ```
 
