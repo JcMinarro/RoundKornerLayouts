@@ -1,0 +1,74 @@
+defaults: &defaults
+  working_directory: ~/code
+  docker:
+    - image: circleci/android:api-28
+  environment:
+    TZ: Europe/Madrid
+    JVM_OPTS: -Xmx3200m
+    GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+    _JAVA_OPTIONS: "-Xms256m -Xmx1280m -XX:MaxPermSize=350m"
+
+configure_gradle: &configure_gradle
+  name: Configure Gradle Properties
+  command: |
+    mkdir -p ~/.gradle
+    touch ~/.gradle/gradle.properties
+    echo "org.gradle.daemon=false" > ~/.gradle/gradle.properties
+    echo "org.gradle.jvmargs=-Xmx1536m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
+download_gradle_dependencies: &download_gradle_dependencies
+  name: Download dependencies
+  command: ./gradlew prefetchDependencies dependencies :roundkornerlayout:dependencies sample:dependencies
+restore_cache: &restore_cache
+  key: jars--{{ checksum "build.gradle" }}-{{ checksum  "roundkornerlayout/build.gradle" }}-{{ checksum  "sample/build.gradle" }}
+save_cache: &save_cache
+  paths:
+    - ~/.gradle
+  key: jars--{{ checksum "build.gradle" }}-{{ checksum  "roundkornerlayout/build.gradle" }}-{{ checksum  "sample/build.gradle" }}
+
+version: 2
+jobs:
+  build_roundkornerlayout:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: *configure_gradle
+      - restore_cache: *restore_cache
+      - run: *download_gradle_dependencies
+      - save_cache: *save_cache
+      - run:
+          name: Build RoundKornerLayout lib
+          command: ./gradlew roundkornerlayout:assemble --stacktrace -PdisablePreDex
+      - store_artifacts:
+          path: roundkornerlayout/build/outputs/
+          destination: artifacts
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+            - roundkornerlayout/build
+
+  build_sample:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: *configure_gradle
+      - restore_cache: *restore_cache
+      - run: *download_gradle_dependencies
+      - save_cache: *save_cache
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build RoundKornerLayout sample
+          command: ./gradlew sample:assemble --stacktrace -PdisablePreDex
+      - store_artifacts:
+          path: sample/build/outputs/apk/
+          destination: apks
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - build_roundkoernerlayout
+      - build_sample:
+          requires:
+            - build_roundkoernerlayout
