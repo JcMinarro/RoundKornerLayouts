@@ -17,7 +17,7 @@ configure_gradle: &configure_gradle
     echo "org.gradle.jvmargs=-Xmx1536m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
 download_gradle_dependencies: &download_gradle_dependencies
   name: Download dependencies
-  command: ./gradlew prefetchDependencies dependencies :roundkornerlayout:dependencies sample:dependencies
+  command: ./gradlew dependencies :roundkornerlayout:dependencies sample:dependencies
 restore_cache: &restore_cache
   key: jars--{{ checksum "build.gradle" }}-{{ checksum  "roundkornerlayout/build.gradle" }}-{{ checksum  "sample/build.gradle" }}
 save_cache: &save_cache
@@ -68,7 +68,7 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - build_roundkoernerlayout
+      - build_roundkornerlayout
       - build_sample:
           requires:
-            - build_roundkoernerlayout
+            - build_roundkornerlayout
